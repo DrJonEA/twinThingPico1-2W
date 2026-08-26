@@ -61,14 +61,14 @@ protected:
 	 * @param len
 	 * @return
 	 */
-	char* jsonTemp(char *buf, unsigned int len);
+	virtual char* jsonTemp(char *buf, unsigned int len);
 	/***
 	 * get boot time in json format.
 	 * @param buf
 	 * @param len
 	 * @return
 	 */
-	char* jsonBoot(char *buf, unsigned int len);
+	virtual char* jsonBoot(char *buf, unsigned int len);
 
 private:
 	float temprature = 0.0;

@@ -192,7 +192,11 @@ void TwinTask::processMsg(char *str){
 		if (pState->isDirty()){
 			LogDebug(("State is dirty so sending delta"));
 			pState->delta(xMsg, STATE_MAX_MSG_LEN);
-			mqttInterface->pubToTopic(updateTopic, xMsg, strlen(xMsg), 1);
+			if (mqttInterface){
+				mqttInterface->pubToTopic(updateTopic, xMsg, strlen(xMsg), 1);
+			} else {
+				LogError(("MQTT Interface not set for TwinTask"));
+			}
 		}
 		else {
 			LogDebug(("State clean after processing json"));

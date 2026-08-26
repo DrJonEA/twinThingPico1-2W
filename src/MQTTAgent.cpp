@@ -542,6 +542,11 @@ bool MQTTAgent::pubToTopic(const char * topic, const void * payload,
 
 	MQTTStatus_t status;
 
+	if (xConnState != Online){
+		LogInfo(("Publish while offline ignored"));
+		return false;
+	}
+
 	// Fill command
 	MQTTAgentCommandInfo_t xCommandInfo;
 	xCommandInfo.cmdCompleteCallback = MQTTAgent::publishCmdCompleteCb;
@@ -581,6 +586,9 @@ bool MQTTAgent::pubToTopic(const char * topic, const void * payload,
 	status = MQTTAgent_Publish( &xGlobalMqttAgentContext, pPublishInfo, &xCommandInfo );
 	if (status != MQTTSuccess ){
 		LogError(("publish error %d", status));
+		vPortFree(pCmdCBContext->topic);
+		vPortFree(pCmdCBContext->payload);
+		vPortFree(pCmdCBContext);
 		return false;
 	} else {
 		//LogInfo(("Publish Complete"));
