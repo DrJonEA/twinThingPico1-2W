@@ -63,6 +63,10 @@ public:
 	 */
 	virtual void route(const char *topic, size_t topicLen, const void * payload, size_t payloadLen, MQTTInterface *interface);
 
+	/***
+	 * Set group name for ping
+	 */
+	void setGroup(const char * grpName);
 private:
 
 	MQTTPingTask *pingTask = NULL;
@@ -70,6 +74,7 @@ private:
 	char * pingTopic = NULL;
 	char * pongTopic = NULL;
 	char * allPingTopic = NULL;
+	char * grpPingTopic = NULL;
 
 };
 

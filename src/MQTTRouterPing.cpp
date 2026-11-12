@@ -107,6 +107,7 @@ void MQTTRouterPing::route(const char *topic, size_t topicLen, const void * payl
 	if (pingTask == NULL){
 		return;
 	}
+	
 	if (strlen(pingTopic) == topicLen){
 		if (memcmp(topic, pingTopic, topicLen)==0){
 			pingTask->addPing(payload, payloadLen);
@@ -115,6 +116,13 @@ void MQTTRouterPing::route(const char *topic, size_t topicLen, const void * payl
 	if (strlen(allPingTopic) == topicLen){
 		if (memcmp(topic, allPingTopic, topicLen)==0){
 			pingTask->addPing(payload, payloadLen);
+		}
+	}
+	if (grpPingTopic != NULL){
+		if (strlen(grpPingTopic) == topicLen){
+			if (memcmp(topic, grpPingTopic, topicLen)==0){
+				pingTask->addPing(payload, payloadLen);
+			}
 		}
 	}
 }
@@ -129,6 +137,10 @@ void MQTTRouterPing::subscribe(MQTTInterface *interface){
 	}
 	interface->subToTopic(pingTopic, 1);
 	interface->subToTopic(allPingTopic, 1);
+
+	if (grpPingTopic != NULL){
+		interface->subToTopic(grpPingTopic, 1);
+	}
 }
 
 /***
@@ -143,3 +155,16 @@ void MQTTRouterPing::setPingTask(MQTTPingTask *p, MQTTInterface *mi){
 }
 
 
+void MQTTRouterPing::setGroup(const char * grpName){
+	if (grpPingTopic != NULL){
+		vPortFree(grpPingTopic);
+	}
+	grpPingTopic = (char *)pvPortMalloc(
+			MQTTTopicHelper::lenGroupTopic(grpName, PING)
+			);
+	if (grpPingTopic != NULL){
+		MQTTTopicHelper::genGroupTopic(grpPingTopic, grpName, PING);
+	} else {
+		LogError( ("Unable to allocate group topic") );
+	}
+}
