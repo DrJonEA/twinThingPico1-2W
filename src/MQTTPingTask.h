@@ -82,6 +82,11 @@ public:
 	 */
 	virtual unsigned int getStakHighWater();
 
+	/***
+	 * Set the IP Address so pong contains it
+	 */
+	virtual void setIPAddr(char *ipaddr);
+
 protected:
 	/***
 	 * Internal function to run the task from within the object
@@ -93,6 +98,8 @@ private:
 	MQTTInterface *mqttInterface = NULL;
 	TaskHandle_t xHandle = NULL;
 	char * pongTopic = NULL;
+
+	char * pIPAddr = NULL;
 
 };
 

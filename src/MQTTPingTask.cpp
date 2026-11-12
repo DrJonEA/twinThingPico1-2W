@@ -114,6 +114,10 @@ void MQTTPingTask::run(){
 			size_t size = xMessageBufferReceive(xMessageBuffer,
 								payload, MAXPINGPAYLOAD, 0);
 			if (size > 0){
+				if (pIPAddr != NULL){
+					sprintf(&payload[size - 1], ",\"ip\":\"%s\"}", pIPAddr);
+					size = strlen(payload);
+				}
 				if ((pongTopic != NULL) && (mqttInterface != NULL)){
 					mqttInterface->pubToTopic(pongTopic, payload, size);
 				} else {
@@ -144,3 +148,10 @@ unsigned int MQTTPingTask::getStakHighWater(){
 		return 0;
 }
 
+
+/***
+ * Set the IP Address so pong contains it
+ */
+void MQTTPingTask::setIPAddr(char *ipaddr){
+	pIPAddr = ipaddr;
+}
