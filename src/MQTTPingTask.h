@@ -19,7 +19,7 @@
 #include "MQTTInterface.h"
 
 #define PINGBUFFER 250
-#define MAXPINGPAYLOAD 20
+#define MAXPINGPAYLOAD 80
 
 class MQTTPingTask {
 public:
