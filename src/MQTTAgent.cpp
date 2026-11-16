@@ -576,7 +576,23 @@ bool MQTTAgent::pubToTopic(const char * topic, const void * payload,
 
 	// Fill the information for publish operation.
 	MQTTPublishInfo_t * pPublishInfo = &(pCmdCBContext->publishInfo);
-	pPublishInfo->qos = MQTTQoS1;
+	// pCmdCBContext comes from pvPortMalloc, so clear it: an uninitialised
+	// dup flag holds heap garbage, and coreMQTT's "dup == true" test can
+	// compile to dup << 3, corrupting the PUBLISH header byte (seen by the
+	// broker as UNSUBACK and disconnected).
+	memset(pPublishInfo, 0, sizeof(MQTTPublishInfo_t));
+	switch (QoS){
+	case 0:
+		pPublishInfo->qos = MQTTQoS0;
+		break;
+	case 2:
+		pPublishInfo->qos = MQTTQoS2;
+		break;
+	default:
+		pPublishInfo->qos = MQTTQoS1;
+		break;
+	}
+	pPublishInfo->dup = false;
 	pPublishInfo->pTopicName = pCmdCBContext->topic;
 	pPublishInfo->topicNameLength = strlen(pCmdCBContext->topic);
 	pPublishInfo->pPayload = pCmdCBContext->payload;

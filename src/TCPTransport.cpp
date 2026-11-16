@@ -138,6 +138,7 @@ bool TCPTransport::transConnect(){
 	if (res < 0){
 		char *s = ipaddr_ntoa(&xHost);
 		LogError(("ERROR connecting %d to %s port %d\n",res, s, xPort));
+		transClose();
 		return false;
 	}
 
@@ -165,7 +166,13 @@ int TCPTransport::status(){
  * @return true on success
  */
 bool TCPTransport::transClose(){
-	closesocket(xSock);
+	// Only close a socket we opened, and only once. MQTTAgent can call
+	// this twice per disconnect, and socket numbers are reused, so a second
+	// close could shut another task's connection (e.g. an HTTP request).
+	if (xSock >= 0){
+		closesocket(xSock);
+		xSock = -1;
+	}
 	return true;
 }
 
